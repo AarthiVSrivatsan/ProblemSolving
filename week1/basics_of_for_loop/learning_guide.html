@@ -132,6 +132,33 @@
   .tab-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
+
+  /* ---- Comparison table (For vs While tab) ---- */
+  .compare-table{width:100%;border-collapse:collapse;margin:18px 0 26px;font-size:14px;}
+  .compare-table th,.compare-table td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  .compare-table th{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;text-transform:uppercase;letter-spacing:.04em;}
+  .compare-table td:first-child{font-family:'JetBrains Mono',monospace;color:var(--slate);font-size:13px;white-space:nowrap;}
+  .compare-table td{color:var(--body);}
+
+  /* ---- Choose the right loop (Section 1) ---- */
+  .choice-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0 4px;}
+  @media (max-width:600px){.choice-row{grid-template-columns:1fr;}}
+  .choice-card{
+    display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+    background:var(--card2);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;text-align:left;transition:border-color .2s,background .2s;
+  }
+  .choice-card:hover{border-color:var(--amber);}
+  .choice-card.picked{border-color:var(--amber);background:rgba(184,121,14,.08);}
+  .choice-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:var(--ink);}
+  .choice-sub{font-family:'Inter',sans-serif;font-size:13px;font-weight:400;color:var(--slate);}
+  .choice-feedback{
+    margin-top:16px;font-size:14px;color:var(--body);
+    background:rgba(43,99,87,.08);border:1px solid rgba(43,99,87,.25);
+    border-radius:10px;padding:14px 16px;display:none;
+  }
+  .choice-feedback.show{display:block;}
+  .choice-feedback strong{color:var(--ink);}
 </style>
 </head>
 <body>
@@ -145,11 +172,12 @@
   <section>
     <p class="section-num">Before you start</p>
     <h2>Loops, from mechanics to syntax</h2>
-    <p class="section-desc">First see what a loop actually does. Then see what it looks like written in Python. The lap tracker itself is still yours to write, in Section 2.</p>
+    <p class="section-desc">First see what a loop actually does. Then see what it looks like written in Python. The lap tracker itself is still yours to write, in Section 3.</p>
 
     <div class="tab-bar" role="tablist">
       <button class="tab-btn active" data-tab="mechanics" role="tab" aria-selected="true">How do loops work</button>
       <button class="tab-btn" data-tab="python" role="tab" aria-selected="false">Basics of Python</button>
+      <button class="tab-btn" data-tab="compare" role="tab" aria-selected="false">For vs While</button>
     </div>
 
     <div class="card tab-panel active" id="tab-mechanics">
@@ -225,13 +253,97 @@ print(<span class="str">"Liftoff!"</span>)</div>
         Python will refuse to run until both are fixed.
       </div>
     </div>
+
+    <div class="card tab-panel" id="tab-compare">
+      <p style="margin-top:0;">Both loops repeat code. The difference is <strong>who decides when to stop</strong>.</p>
+
+      <table class="compare-table">
+        <thead>
+          <tr><th></th><th>for loop</th><th>while loop</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Best for</td>
+            <td>A known number of repeats — laps, list items, a fixed range</td>
+            <td>An unknown number of repeats — stop when a condition changes</td>
+          </tr>
+          <tr>
+            <td>Counter</td>
+            <td>Handled for you by <code>range()</code></td>
+            <td>You create it, and update it yourself</td>
+          </tr>
+          <tr>
+            <td>Stops when</td>
+            <td><code>range()</code> runs out</td>
+            <td>Its condition becomes <code>False</code></td>
+          </tr>
+          <tr>
+            <td>Main risk</td>
+            <td>Off-by-one errors in the range</td>
+            <td>Infinite loop, if the condition never turns false</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-head">Same task, two ways</h3>
+      <p>Both of these add up 1 + 2 + 3 + 4 + 5 and print the total. Same result, different control.</p>
+
+      <div class="io-cols" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <p style="margin:0 0 8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;">for loop</p>
+          <div class="code-block">total = 0
+<span class="kw">for</span> i <span class="kw">in</span> range(1, 6):
+    total += i
+print(<span class="str">f"Total: {total}"</span>)</div>
+        </div>
+        <div>
+          <p style="margin:0 0 8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;">while loop</p>
+          <div class="code-block">total = 0
+i = 1
+<span class="kw">while</span> i &lt;= 5:
+    total += i
+    i += 1
+print(<span class="str">f"Total: {total}"</span>)</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Rule of thumb:</strong> if you can say "repeat this <em>N</em> times," reach for <code>for</code>.
+        If you can only say "keep going <em>until</em> something happens," reach for <code>while</code>.
+        The lap tracker in Section 3 knows <code>n</code> up front — which is your first clue about which one fits.
+      </div>
+    </div>
   </section>
 
-  <!-- ============ SECTION 1: ALGORITHM BUILDER ============ -->
+  <!-- ============ SECTION 1: CHOOSE THE RIGHT LOOP ============ -->
   <section>
     <p class="section-num">Section 1</p>
+    <h2>Choose the right loop</h2>
+    <p class="section-desc">Before you build the algorithm, decide: does this problem call for a <code>for</code> loop or a <code>while</code> loop?</p>
+    <div class="card">
+      <p style="margin-top:0;">
+        Remember the problem: a runner does <strong>n</strong> laps, each covering <strong>d</strong> metres,
+        and you print the cumulative distance after every lap.
+      </p>
+      <div class="choice-row">
+        <button class="choice-card" data-choice="for">
+          <span class="choice-title">for loop</span>
+          <span class="choice-sub">repeat a known number of times</span>
+        </button>
+        <button class="choice-card" data-choice="while">
+          <span class="choice-title">while loop</span>
+          <span class="choice-sub">repeat until a condition changes</span>
+        </button>
+      </div>
+      <div class="choice-feedback" id="choiceFeedback"></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2: ALGORITHM BUILDER ============ -->
+  <section>
+    <p class="section-num">Section 2</p>
     <h2>Build the algorithm</h2>
-    <p class="section-desc">These steps are shuffled. Use the arrows to put them back in the correct order, then check your work.</p>
+    <p class="section-desc">Since n is known up front, we'll build this as a for loop. These steps are shuffled — use the arrows to put them back in the correct order, then check your work.</p>
     <div class="card">
       <div id="stepList"></div>
       <div class="run-row">
@@ -242,9 +354,9 @@ print(<span class="str">"Liftoff!"</span>)</div>
     </div>
   </section>
 
-  <!-- ============ SECTION 2: LIVE CODE EDITOR ============ -->
+  <!-- ============ SECTION 3: LIVE CODE EDITOR ============ -->
   <section>
-    <p class="section-num">Section 2</p>
+    <p class="section-num">Section 3</p>
     <h2>Write it and run it</h2>
     <p class="section-desc">
       Fill in the loop. Call <code>runLap(i, n, total)</code> once per lap to watch the track fill in below —
@@ -397,16 +509,33 @@ for i in range(1, n + 1):
   });
 })();
 
-/* ================= SECTION 1: algorithm builder ================= */
+/* ================= SECTION 1: choose the right loop ================= */
+(function(){
+  const cards = document.querySelectorAll('.choice-card');
+  const feedback = document.getElementById('choiceFeedback');
+
+  const messages = {
+    for: "Good instinct. The number of laps, n, is known before the loop starts — that's exactly the situation a for loop (with range(1, n + 1)) is built for. It manages the counter for you.",
+    while: "That works — a while loop can absolutely solve this, as long as you set up i = 1 and increment it yourself, then stop when i > n. It's just a little more to manage by hand, since here n is already known up front, which is usually a sign that for is the more natural fit."
+  };
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('picked'));
+      card.classList.add('picked');
+      feedback.textContent = messages[card.dataset.choice];
+      feedback.classList.add('show');
+    });
+  });
+})();
+
+/* ================= SECTION 2: algorithm builder ================= */
 (function(){
   const correctOrder = [
     'Set total = 0',
-    'Set i = 1',
-    'While i ≤ n, repeat:',
+    'For i = 1 to n:',
     '  total = total + d',
-    '  Print "Lap i: total m"',
-    '  i = i + 1',
-    'When i > n, stop'
+    '  Print "Lap i: total m"'
   ];
 
   let current = [];
@@ -466,7 +595,7 @@ for i in range(1, n + 1):
       if (!isRight) allCorrect = false;
     });
     document.getElementById('orderStatus').textContent = allCorrect
-      ? "✓ That is the correct order — the exact shape of the loop you'll write in Section 2."
+      ? "✓ That is the correct order — the exact shape of the loop you'll write in Section 3."
       : 'Not quite — the green rows are in place, the red ones need to move.';
   });
 
@@ -474,7 +603,7 @@ for i in range(1, n + 1):
   init();
 })();
 
-/* ================= SECTION 2: live code editor (runs real Python via Pyodide) ================= */
+/* ================= SECTION 3: live code editor (runs real Python via Pyodide) ================= */
 (function(){
   const runBtn = document.getElementById('runBtn');
   const resetCodeBtn = document.getElementById('resetCodeBtn');
