@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lap Distance Tracker — Learning Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<style>
+  :root{
+    --bg:#F3F5EF;
+    --ink:#182430;
+    --body:#3C4A56;
+    --amber:#B8790E;
+    --pine:#2B6357;
+    --brick:#B23A22;
+    --slate:#66727D;
+    --card:#FFFFFF;
+    --card2:#F7F8F4;
+    --line:rgba(24,36,48,.10);
+    --terminal:#0C1017;
+    --terminal-text:#EDEBE3;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--body);font-family:'Inter',sans-serif;line-height:1.6;}
+  .wrap{max-width:980px;margin:0 auto;padding:56px 24px 120px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,4.6vw,42px);margin:0 0 8px;color:var(--ink);}
+  .sub{color:var(--slate);font-size:16px;margin:0 0 44px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:21px;color:var(--ink);margin:0 0 6px;}
+  .section-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 4px;}
+  .section-desc{color:var(--slate);font-size:15px;margin:0 0 22px;}
+  section{margin-bottom:64px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 1px 2px rgba(24,36,48,.04), 0 10px 24px rgba(24,36,48,.05);}
+
+  /* ---- Loop mechanics visual ---- */
+  .mech-grid{display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:center;}
+  @media (max-width:700px){.mech-grid{grid-template-columns:1fr;}}
+  .ring-wrap{position:relative;width:200px;height:200px;margin:0 auto;}
+  svg.ring{width:100%;height:100%;}
+  .ring-bg{fill:none;stroke:rgba(24,36,48,.1);stroke-width:12;}
+  .ring-fg{fill:none;stroke:var(--amber);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .4s ease;}
+  .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring-count{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:600;color:var(--ink);}
+  .ring-count-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--slate);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+
+  .pseudo-line{
+    font-family:'JetBrains Mono',monospace;font-size:14.5px;padding:8px 12px;border-radius:6px;
+    color:var(--slate);margin-bottom:2px;border-left:3px solid transparent;transition:all .25s;
+  }
+  .pseudo-line.active{background:rgba(184,121,14,.10);border-left-color:var(--amber);color:var(--ink);}
+  .pseudo-line .indent{padding-left:22px;display:block;}
+
+  .mech-controls{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  button{
+    font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+    border:none;border-radius:8px;padding:10px 18px;cursor:pointer;
+    background:var(--amber);color:#FFFFFF;
+  }
+  button.secondary{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  button:disabled{opacity:.4;cursor:default;}
+  .status-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--slate);margin-top:14px;min-height:18px;}
+
+  /* ---- Algorithm builder ---- */
+  #stepList{display:flex;flex-direction:column;gap:10px;}
+  .step-item{
+    background:var(--card2);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;display:flex;align-items:center;gap:12px;
+  }
+  .step-item .idx{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--slate);
+    width:22px;text-align:center;flex-shrink:0;
+  }
+  .step-item .txt{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);flex:1;}
+  .step-item.correct{border-color:var(--pine);background:rgba(43,99,87,.10);}
+  .step-item.wrong{border-color:var(--brick);background:rgba(178,58,34,.08);}
+  .step-btns{display:flex;gap:6px;}
+  .step-btns button{padding:5px 9px;font-size:12px;background:rgba(24,36,48,.06);color:var(--ink);}
+  .step-btns button:hover{background:rgba(24,36,48,.12);}
+
+  /* ---- Code editor (kept dark: this is the terminal, deliberately set apart from the paper around it) ---- */
+  .editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:800px){.editor-grid{grid-template-columns:1fr;}}
+  textarea{
+    width:100%;height:300px;background:var(--terminal);color:var(--terminal-text);
+    border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:16px;
+    font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.6;resize:vertical;
+  }
+  .console{
+    background:var(--terminal);border:1px solid rgba(255,255,255,.1);border-radius:10px;
+    padding:16px;font-family:'JetBrains Mono',monospace;font-size:13.5px;height:300px;overflow-y:auto;
+  }
+  .console .line{color:#B7C1CC;margin-bottom:4px;}
+  .console .err{color:#E27A5E;}
+  .console .placeholder{color:#6B7680;}
+  .run-row{display:flex;gap:10px;margin-top:14px;align-items:center;flex-wrap:wrap;}
+  .track-mini{margin-top:20px;}
+  svg.mini-track{width:100%;max-width:400px;height:auto;display:block;margin:0 auto;}
+  code{background:rgba(24,36,48,.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);}
+
+  /* ---- Python basics reference ---- */
+  .basics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px;}
+  @media (max-width:760px){.basics-grid{grid-template-columns:1fr;}}
+  .basics-card{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;}
+  .basics-card h4{margin:0 0 6px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;}
+  .basics-card p{margin:0;font-size:14px;color:var(--body);}
+  .basics-card code{white-space:nowrap;}
+  h3.sub-head{font-family:'Space Grotesk',sans-serif;font-size:16.5px;color:var(--ink);margin:28px 0 10px;}
+  h3.sub-head:first-of-type{margin-top:6px;}
+  .code-block{
+    background:var(--terminal);color:var(--terminal-text);border-radius:10px;
+    padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;
+    line-height:1.7;overflow-x:auto;white-space:pre;
+  }
+  .code-block .kw{color:#E3A54B;}
+  .code-block .str{color:#7FCBB6;}
+  .code-block .cm{color:#8993A0;font-style:italic;}
+  .callout{
+    margin-top:16px;background:rgba(184,121,14,.08);border:1px solid rgba(184,121,14,.25);
+    border-radius:10px;padding:12px 16px;font-size:14px;color:var(--body);
+  }
+  .callout strong{color:var(--ink);}
+
+  /* ---- Tabs ---- */
+  .tab-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+    padding:9px 16px;border-radius:8px;cursor:pointer;
+    background:transparent;border:1px solid var(--line);color:var(--slate);
+  }
+  .tab-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Learning Guide</p>
+  <h1>Lap Distance Tracker</h1>
+  <p class="sub">From loop mechanics, to a working algorithm, to running code — in that order.</p>
+
+  <!-- ============ LOOPS: MECHANICS + SYNTAX (TABBED) ============ -->
+  <section>
+    <p class="section-num">Before you start</p>
+    <h2>Loops, from mechanics to syntax</h2>
+    <p class="section-desc">First see what a loop actually does. Then see what it looks like written in Python. The lap tracker itself is still yours to write, in Section 2.</p>
+
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" data-tab="mechanics" role="tab" aria-selected="true">How do loops work</button>
+      <button class="tab-btn" data-tab="python" role="tab" aria-selected="false">Basics of Python</button>
+    </div>
+
+    <div class="card tab-panel active" id="tab-mechanics">
+      <div class="mech-grid">
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="80"/>
+            <circle class="ring-fg" id="ringFg" cx="100" cy="100" r="80"
+              stroke-dasharray="502.4" stroke-dashoffset="502.4" transform="rotate(-90 100 100)"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-count" id="ringCount">i = 0</div>
+            <div class="ring-count-label" id="ringLabel">not started</div>
+          </div>
+        </div>
+        <div>
+          <div class="pseudo-line" id="pl-init"><span>set i = 1, set total = 0</span></div>
+          <div class="pseudo-line" id="pl-check"><span>while i ≤ n:</span></div>
+          <div class="pseudo-line" id="pl-body1"><span class="indent">total = total + d</span></div>
+          <div class="pseudo-line" id="pl-body2"><span class="indent">print "Lap i: total m"</span></div>
+          <div class="pseudo-line" id="pl-inc"><span class="indent">i = i + 1</span></div>
+          <div class="pseudo-line" id="pl-exit"><span>i > n → stop</span></div>
+          <div class="mech-controls">
+            <button id="stepBtn">Step ▸</button>
+            <button id="playBtn" class="secondary">Play</button>
+            <button id="resetBtn" class="secondary">Reset</button>
+          </div>
+          <div class="status-line" id="statusLine">Click Step to begin. n = 5 laps, d = 400m.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card tab-panel" id="tab-python">
+      <div class="basics-grid">
+        <div class="basics-card">
+          <h4>Variables</h4>
+          <p>No type keyword needed. <code>n = 5</code> just works — Python figures out it's a number.</p>
+        </div>
+        <div class="basics-card">
+          <h4>Indentation</h4>
+          <p>No curly braces, no semicolons. A <code>:</code> opens a block, and everything inside it is indented — usually 4 spaces.</p>
+        </div>
+        <div class="basics-card">
+          <h4>print() &amp; f-strings</h4>
+          <p><code>print()</code> writes to the screen. An f-string like <code>f"Lap {i}"</code> drops a variable straight into text.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-head">The for loop</h3>
+      <p>Use <code>for</code> when you already know how many times to repeat something.</p>
+      <div class="code-block"><span class="kw">for</span> i <span class="kw">in</span> range(1, 6):
+    print(i)</div>
+      <p style="margin-top:10px;">
+        This prints <code>1 2 3 4 5</code>. <code>range(1, 6)</code> counts from 1 up to 6 —
+        the second number is never reached, so it stops one short at 5.
+      </p>
+
+      <h3 class="sub-head">The while loop</h3>
+      <p>Use <code>while</code> when the loop keeps going until a condition becomes false — you manage the counter yourself.</p>
+      <div class="code-block">count = 5
+<span class="kw">while</span> count &gt; 0:
+    print(count)
+    count -= 1
+print(<span class="str">"Liftoff!"</span>)</div>
+      <p style="margin-top:10px;">
+        Each pass checks the condition first. Forget to change <code>count</code> inside the loop,
+        and it never becomes false — that's an infinite loop.
+      </p>
+
+      <div class="callout">
+        <strong>Watch out:</strong> the two most common beginner slips are forgetting the <code>:</code>
+        at the end of a <code>for</code>/<code>while</code> line, and mixing tabs with spaces in the indentation.
+        Python will refuse to run until both are fixed.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 1: ALGORITHM BUILDER ============ -->
+  <section>
+    <p class="section-num">Section 1</p>
+    <h2>Build the algorithm</h2>
+    <p class="section-desc">These steps are shuffled. Use the arrows to put them back in the correct order, then check your work.</p>
+    <div class="card">
+      <div id="stepList"></div>
+      <div class="run-row">
+        <button id="checkOrder">Check order</button>
+        <button id="shuffleAgain" class="secondary">Shuffle again</button>
+      </div>
+      <div class="status-line" id="orderStatus"></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2: LIVE CODE EDITOR ============ -->
+  <section>
+    <p class="section-num">Section 2</p>
+    <h2>Write it and run it</h2>
+    <p class="section-desc">
+      Fill in the loop. Call <code>runLap(i, n, total)</code> once per lap to watch the track fill in below —
+      it's already wired up for you.
+    </p>
+    <div class="card">
+      <div class="editor-grid">
+        <textarea id="codeInput" spellcheck="false">n = 5
+d = 400
+total = 0
+
+for i in range(1, n + 1):
+    # 1. add this lap's distance to the running total
+
+
+    # 2. print the lap number and the running total
+    print(f"Lap {i}: {total}m")
+
+    # 3. tell the track visual about this lap
+    runLap(i, n, total)</textarea>
+        <div class="console" id="consoleOut"><div class="placeholder">Loading Python runtime…</div></div>
+      </div>
+      <div class="run-row">
+        <button id="runBtn" disabled>Run ▸</button>
+        <button id="resetCodeBtn" class="secondary">Reset starter code</button>
+      </div>
+      <div class="status-line" id="runStatus">Setting up Python in your browser — this takes a few seconds, once.</div>
+
+      <div class="track-mini">
+        <svg class="mini-track" id="miniTrack" viewBox="0 0 400 200">
+          <path class="mini-path-bg" d="M 70 34 L 330 34 A 66 66 0 0 1 330 166 L 70 166 A 66 66 0 0 1 70 34 Z"
+            fill="none" stroke="rgba(24,36,48,.12)" stroke-width="10"/>
+          <path id="miniProgress" d="M 70 34 L 330 34 A 66 66 0 0 1 330 166 L 70 166 A 66 66 0 0 1 70 34 Z"
+            fill="none" stroke="#B8790E" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="616" stroke-dashoffset="616"/>
+          <circle id="miniRunner" r="7" cx="70" cy="34" fill="#B23A22"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ================= TABS: mechanics vs python basics ================= */
+(function(){
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected','true');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+})();
+
+/* ================= HOW A LOOP WORKS: stepper ================= */
+(function(){
+  const n = 5, d = 400;
+  let i = 0, total = 0, phase = 'init'; // init -> check -> body1 -> body2 -> inc -> (check again) -> exit
+  let playTimer = null;
+
+  const ringFg = document.getElementById('ringFg');
+  const ringCount = document.getElementById('ringCount');
+  const ringLabel = document.getElementById('ringLabel');
+  const statusLine = document.getElementById('statusLine');
+  const lines = {
+    init: document.getElementById('pl-init'),
+    check: document.getElementById('pl-check'),
+    body1: document.getElementById('pl-body1'),
+    body2: document.getElementById('pl-body2'),
+    inc: document.getElementById('pl-inc'),
+    exit: document.getElementById('pl-exit'),
+  };
+  const circumference = 502.4;
+
+  function clearActive(){ Object.values(lines).forEach(l => l.classList.remove('active')); }
+
+  function render(activeKey, statusText){
+    clearActive();
+    if (lines[activeKey]) lines[activeKey].classList.add('active');
+    ringCount.textContent = `i = ${i}`;
+    ringLabel.textContent = i === 0 ? 'not started' : (i > n ? 'done' : `lap ${i} of ${n}`);
+    const frac = Math.min(i / n, 1);
+    ringFg.setAttribute('stroke-dashoffset', circumference - frac * circumference);
+    statusLine.textContent = statusText;
+  }
+
+  function step(){
+    switch(phase){
+      case 'init':
+        i = 1; total = 0;
+        render('init', 'Initialised: i = 1, total = 0.');
+        phase = 'check';
+        break;
+      case 'check':
+        if (i <= n) {
+          render('check', `Check: is i (${i}) ≤ n (${n})? Yes → run the body.`);
+          phase = 'body1';
+        } else {
+          render('exit', `Check: is i (${i}) ≤ n (${n})? No → exit the loop.`);
+          phase = 'done';
+          document.getElementById('stepBtn').disabled = true;
+        }
+        break;
+      case 'body1':
+        total += d;
+        render('body1', `total = total + d → total is now ${total}.`);
+        phase = 'body2';
+        break;
+      case 'body2':
+        render('body2', `Print: "Lap ${i}: ${total}m".`);
+        phase = 'inc';
+        break;
+      case 'inc':
+        render('inc', `i = i + 1 → i is now ${i+1}.`);
+        i += 1;
+        phase = 'check';
+        break;
+    }
+  }
+
+  function reset(){
+    i = 0; total = 0; phase = 'init';
+    document.getElementById('stepBtn').disabled = false;
+    clearActive();
+    ringCount.textContent = 'i = 0';
+    ringLabel.textContent = 'not started';
+    ringFg.setAttribute('stroke-dashoffset', circumference);
+    statusLine.textContent = 'Click Step to begin. n = 5 laps, d = 400m.';
+    stopPlay();
+  }
+
+  function stopPlay(){
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+    document.getElementById('playBtn').textContent = 'Play';
+  }
+
+  document.getElementById('stepBtn').addEventListener('click', step);
+  document.getElementById('resetBtn').addEventListener('click', reset);
+  document.getElementById('playBtn').addEventListener('click', function(){
+    if (playTimer) { stopPlay(); return; }
+    this.textContent = 'Pause';
+    playTimer = setInterval(() => {
+      if (phase === 'done') { stopPlay(); return; }
+      step();
+    }, 650);
+  });
+})();
+
+/* ================= SECTION 1: algorithm builder ================= */
+(function(){
+  const correctOrder = [
+    'Set total = 0',
+    'Set i = 1',
+    'While i ≤ n, repeat:',
+    '  total = total + d',
+    '  Print "Lap i: total m"',
+    '  i = i + 1',
+    'When i > n, stop'
+  ];
+
+  let current = [];
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    // guarantee it's not already correct
+    if (a.join() === correctOrder.join()) return shuffle(arr);
+    return a;
+  }
+
+  function renderList(){
+    const list = document.getElementById('stepList');
+    list.innerHTML = '';
+    current.forEach((text, idx) => {
+      const row = document.createElement('div');
+      row.className = 'step-item';
+      row.innerHTML = `
+        <div class="idx">${idx+1}</div>
+        <div class="txt">${text}</div>
+        <div class="step-btns">
+          <button data-dir="up" data-idx="${idx}">▲</button>
+          <button data-dir="down" data-idx="${idx}">▼</button>
+        </div>`;
+      list.appendChild(row);
+    });
+    document.querySelectorAll('.step-btns button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx, 10);
+        const dir = btn.dataset.dir;
+        const swapWith = dir === 'up' ? idx - 1 : idx + 1;
+        if (swapWith < 0 || swapWith >= current.length) return;
+        [current[idx], current[swapWith]] = [current[swapWith], current[idx]];
+        renderList();
+        document.getElementById('orderStatus').textContent = '';
+        document.querySelectorAll('.step-item').forEach(el => el.classList.remove('correct','wrong'));
+      });
+    });
+  }
+
+  function init(){
+    current = shuffle(correctOrder);
+    renderList();
+    document.getElementById('orderStatus').textContent = '';
+  }
+
+  document.getElementById('checkOrder').addEventListener('click', () => {
+    const items = document.querySelectorAll('.step-item');
+    let allCorrect = true;
+    current.forEach((text, idx) => {
+      const isRight = text === correctOrder[idx];
+      items[idx].classList.toggle('correct', isRight);
+      items[idx].classList.toggle('wrong', !isRight);
+      if (!isRight) allCorrect = false;
+    });
+    document.getElementById('orderStatus').textContent = allCorrect
+      ? "✓ That is the correct order — the exact shape of the loop you'll write in Section 2."
+      : 'Not quite — the green rows are in place, the red ones need to move.';
+  });
+
+  document.getElementById('shuffleAgain').addEventListener('click', init);
+  init();
+})();
+
+/* ================= SECTION 2: live code editor (runs real Python via Pyodide) ================= */
+(function(){
+  const runBtn = document.getElementById('runBtn');
+  const resetCodeBtn = document.getElementById('resetCodeBtn');
+  const codeInput = document.getElementById('codeInput');
+  const consoleOut = document.getElementById('consoleOut');
+  const runStatus = document.getElementById('runStatus');
+  const miniProgress = document.getElementById('miniProgress');
+  const miniRunner = document.getElementById('miniRunner');
+  const miniCircumference = 616;
+
+  const starterCode = codeInput.value;
+  let pyodideReady = null;
+
+  function resetMiniTrack(){
+    miniProgress.setAttribute('stroke-dashoffset', miniCircumference);
+    const pathEl = document.getElementById('miniProgress');
+    const pt = pathEl.getPointAtLength(0);
+    miniRunner.setAttribute('cx', pt.x);
+    miniRunner.setAttribute('cy', pt.y);
+  }
+
+  function animateLaps(queue, n){
+    const pathEl = document.getElementById('miniProgress');
+    const total = pathEl.getTotalLength();
+    let idx = 0;
+    resetMiniTrack();
+    const timer = setInterval(() => {
+      if (idx >= queue.length) { clearInterval(timer); return; }
+      const lap = queue[idx];
+      const frac = lap.i / lap.n;
+      miniProgress.setAttribute('stroke-dashoffset', total - frac * total);
+      const pt = pathEl.getPointAtLength(frac * total);
+      miniRunner.setAttribute('cx', pt.x);
+      miniRunner.setAttribute('cy', pt.y);
+      idx++;
+    }, 450);
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function initPyodide(){
+    try {
+      pyodideReady = await loadPyodide();
+      runBtn.disabled = false;
+      consoleOut.innerHTML = '<div class="placeholder">Output will appear here.</div>';
+      runStatus.textContent = 'Python is ready — click Run to try your code.';
+    } catch (err) {
+      runStatus.textContent = 'Could not load the Python runtime — check your connection and reload the page.';
+    }
+  }
+
+  async function run(){
+    if (!pyodideReady) return;
+    consoleOut.innerHTML = '';
+    runBtn.disabled = true;
+
+    const logs = [];
+    const lapQueue = [];
+    pyodideReady.globals.set('runLap', (i, n, total) => {
+      lapQueue.push({ i: Number(i), n: Number(n), total: Number(total) });
+    });
+    pyodideReady.setStdout({ batched: (msg) => { if (msg.length) logs.push(msg); } });
+
+    try {
+      await pyodideReady.runPythonAsync(codeInput.value);
+      if (logs.length === 0) {
+        consoleOut.innerHTML = '<div class="placeholder">Code ran, but nothing was printed. Did you call print()?</div>';
+      } else {
+        consoleOut.innerHTML = logs.map(l => `<div class="line">${escapeHtml(l)}</div>`).join('');
+      }
+      runStatus.textContent = lapQueue.length
+        ? `Ran successfully — ${lapQueue.length} lap(s) recorded on the track below.`
+        : 'Ran successfully — call runLap(i, n, total) inside your loop to animate the track.';
+      if (lapQueue.length) animateLaps(lapQueue, lapQueue[lapQueue.length-1].n);
+    } catch (err) {
+      const lines = String(err).split('\n').map(l => l.trim()).filter(Boolean);
+      const message = lines[lines.length - 1] || String(err);
+      consoleOut.innerHTML = `<div class="line err">${escapeHtml(message)}</div>`;
+      runStatus.textContent = 'There was an error — check the message above.';
+    } finally {
+      runBtn.disabled = false;
+    }
+  }
+
+  runBtn.addEventListener('click', run);
+  resetCodeBtn.addEventListener('click', () => {
+    codeInput.value = starterCode;
+    consoleOut.innerHTML = pyodideReady
+      ? '<div class="placeholder">Output will appear here.</div>'
+      : '<div class="placeholder">Loading Python runtime…</div>';
+    runStatus.textContent = pyodideReady ? '' : 'Setting up Python in your browser — this takes a few seconds, once.';
+    resetMiniTrack();
+  });
+
+  resetMiniTrack();
+  initPyodide();
+})();
+</script>
+</body>
+</html>
