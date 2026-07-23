@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lap Distance Tracker — Problem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5EF;
+    --ink:#182430;
+    --body:#3C4A56;
+    --amber:#B8790E;
+    --pine:#2B6357;
+    --brick:#B23A22;
+    --slate:#66727D;
+    --card:#FFFFFF;
+    --line:rgba(24,36,48,.10);
+    --terminal:#141B24;
+    --terminal-text:#EDEBE3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--body);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:56px 24px 100px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--amber);
+    font-size:13px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(32px,5vw,46px);
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .sub{color:var(--slate);font-size:16px;margin:0 0 40px;}
+  .badge-row{display:flex;gap:10px;margin-bottom:44px;flex-wrap:wrap;}
+  .badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid rgba(184,121,14,.35);
+    color:var(--amber);
+    background:rgba(184,121,14,.08);
+  }
+  section{margin-bottom:48px;}
+  h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:20px;
+    color:var(--ink);
+    border-left:3px solid var(--amber);
+    padding-left:12px;
+    margin:0 0 16px;
+  }
+  p{color:var(--body);font-size:16px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px;
+    box-shadow:0 1px 2px rgba(24,36,48,.04), 0 10px 24px rgba(24,36,48,.05);
+  }
+  /* Diagram */
+  .diagram-card{padding:20px 12px 8px;}
+  svg{display:block;width:100%;height:auto;}
+  .lap-dot{transition:opacity .3s;}
+  .lap-label{font-family:'JetBrains Mono',monospace;font-size:13px;fill:var(--ink);}
+  .lap-label.total{fill:var(--amber);font-weight:600;}
+  .track-path{fill:none;stroke:rgba(24,36,48,.12);stroke-width:14;}
+  .track-progress{fill:none;stroke:var(--amber);stroke-width:14;stroke-linecap:round;}
+  .runner{fill:var(--brick);}
+  .caption{
+    text-align:center;color:var(--slate);font-size:13px;
+    font-family:'JetBrains Mono',monospace;margin-top:6px;
+  }
+  /* IO panels — kept as dark terminal chips: this is where the "machine" speaks */
+  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:14px;}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+  th{color:var(--amber);font-weight:600;}
+  td{color:var(--terminal-text);}
+  .io-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:640px){.io-cols{grid-template-columns:1fr;}}
+  .io-block{background:var(--terminal);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,.06);}
+  .io-block h3{margin:0 0 10px;font-size:13px;color:#93A0AB;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;}
+  pre{margin:0;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--terminal-text);white-space:pre-wrap;}
+  ul.constraints{color:var(--body);padding-left:18px;font-size:15px;}
+  ul.constraints li{margin-bottom:6px;}
+  code{background:rgba(24,36,48,.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);}
+  .footer-link{
+    display:inline-block;margin-top:8px;
+    color:var(--pine);font-family:'JetBrains Mono',monospace;font-size:14px;
+    text-decoration:none;border-bottom:1px dashed var(--pine);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Loops · Warm-up Exercise</p>
+  <h1>Lap Distance Tracker</h1>
+  <p class="sub">A single loop, one running total, five checkpoints.</p>
+
+  <div class="badge-row">
+    <span class="badge">Difficulty: Beginner</span>
+    <span class="badge">Concept: for / while loop</span>
+    <span class="badge">Time: ~15 min</span>
+  </div>
+
+  <section>
+    <h2>The problem</h2>
+    <p>
+      A runner is training on a circular track. Each time they complete one full loop
+      of the track (a <strong>lap</strong>), they've covered a fixed distance, <code>d</code> metres.
+      They train for <code>n</code> laps in a row.
+    </p>
+    <p>
+      Write a program that prints the runner's <strong>cumulative distance</strong> after
+      every lap — not just the distance of that one lap, but the running total so far.
+    </p>
+  </section>
+
+  <section>
+    <h2>Picture it</h2>
+    <div class="card diagram-card">
+      <svg id="track" viewBox="0 0 720 360">
+        <path class="track-path" d="M 130 60 L 590 60 A 130 130 0 0 1 590 320 L 130 320 A 130 130 0 0 1 130 60 Z"/>
+        <path class="track-progress" id="progressPath"
+          d="M 130 60 L 590 60 A 130 130 0 0 1 590 320 L 130 320 A 130 130 0 0 1 130 60 Z"
+          stroke-dasharray="1160" stroke-dashoffset="1160"/>
+        <circle class="runner" id="runner" r="10" cx="130" cy="60"/>
+
+        <!-- 5 checkpoint dots + labels, positioned around the oval -->
+        <g id="dots"></g>
+      </svg>
+    </div>
+    <p class="caption">Each lap = one pass through the loop body. The odometer only ever goes up.</p>
+  </section>
+
+  <section>
+    <h2>Input / Output</h2>
+    <div class="io-cols">
+      <div class="io-block">
+        <h3>Input</h3>
+        <pre>n = 5
+d = 400</pre>
+      </div>
+      <div class="io-block">
+        <h3>Output</h3>
+        <pre>Lap 1: 400m
+Lap 2: 800m
+Lap 3: 1200m
+Lap 4: 1600m
+Lap 5: 2000m</pre>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Constraints</h2>
+    <ul class="constraints">
+      <li><code>1 ≤ n ≤ 20</code> — number of laps</li>
+      <li><code>1 ≤ d ≤ 2000</code> — lap length in metres</li>
+      <li>Use exactly one loop. No hardcoding the five output lines.</li>
+      <li>Print one line per lap, in order, showing the total distance <em>so far</em>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Think about it before you code</h2>
+    <p>
+      Three things repeat every lap: a number goes up by one, a distance gets added to a
+      running total, and a line gets printed. Everything else — the starting values,
+      the stopping point — only happens once. That split is the whole idea behind a loop.
+    </p>
+    <p>
+      Ready to build the algorithm and try it yourself? Head to the
+      <strong>Learning Guide</strong> — it has a step-fixing exercise and a live editor.
+    </p>
+  </section>
+
+</div>
+
+<script>
+  // Build 5 checkpoint dots evenly spaced along the track path, then
+  // play a one-time load animation: runner travels the loop, dots light
+  // up in sequence, odometer-style labels appear.
+  const path = document.getElementById('progressPath');
+  const runner = document.getElementById('runner');
+  const dotsGroup = document.getElementById('dots');
+  const totalLen = path.getTotalLength();
+  const laps = 5, dist = 400;
+  const dotEls = [];
+
+  for (let i = 1; i <= laps; i++) {
+    const frac = i / laps;
+    const pt = path.getPointAtLength(frac * totalLen);
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('opacity','0.15');
+    g.classList.add('lap-dot');
+
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+    dot.setAttribute('r', 6); dot.setAttribute('fill', '#B8790E');
+    g.appendChild(dot);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    const offsetX = pt.x < 360 ? -14 : 14;
+    const anchor = pt.x < 360 ? 'end' : 'start';
+    label.setAttribute('x', pt.x + offsetX);
+    label.setAttribute('y', pt.y - (pt.y > 180 ? -22 : -14));
+    label.setAttribute('text-anchor', anchor);
+    label.setAttribute('class','lap-label total');
+    label.textContent = `Lap ${i}: ${i*dist}m`;
+    g.appendChild(label);
+
+    dotsGroup.appendChild(g);
+    dotEls.push(g);
+  }
+
+  let step = 0;
+  function animateStep() {
+    if (step > laps) return;
+    const frac = step / laps;
+    path.setAttribute('stroke-dashoffset', totalLen - frac * totalLen);
+    const pt = path.getPointAtLength(frac * totalLen);
+    runner.setAttribute('cx', pt.x);
+    runner.setAttribute('cy', pt.y);
+    if (step > 0) dotEls[step-1].setAttribute('opacity', '1');
+    step++;
+    setTimeout(animateStep, 550);
+  }
+  setTimeout(animateStep, 400);
+</script>
+</body>
+</html>
