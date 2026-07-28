@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Learning Guide — Lists &amp; For Loops</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5EF;
+    --ink:#182430;
+    --body:#3C4A56;
+    --amber:#B8790E;
+    --pine:#2B6357;
+    --brick:#B23A22;
+    --slate:#66727D;
+    --card:#FFFFFF;
+    --card2:#F7F8F4;
+    --line:rgba(24,36,48,.10);
+    --terminal:#141B24;
+    --terminal-text:#EDEBE3;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--body);font-family:'Inter',sans-serif;line-height:1.6;}
+  .wrap{max-width:960px;margin:0 auto;padding:56px 24px 120px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,4.6vw,42px);margin:0 0 8px;color:var(--ink);}
+  .sub{color:var(--slate);font-size:16px;margin:0 0 34px;max-width:680px;}
+  .badge-row{display:flex;gap:10px;margin-bottom:44px;flex-wrap:wrap;}
+  .badge{font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid rgba(184,121,14,.35);color:var(--amber);background:rgba(184,121,14,.08);}
+  section{margin-bottom:56px;}
+  .section-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 4px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:21px;color:var(--ink);margin:0 0 6px;}
+  h3.sub-head{font-family:'Space Grotesk',sans-serif;font-size:16.5px;color:var(--ink);margin:26px 0 10px;}
+  h3.sub-head:first-of-type{margin-top:4px;}
+  .section-desc{color:var(--slate);font-size:15px;margin:0 0 20px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 28px;box-shadow:0 1px 2px rgba(24,36,48,.04), 0 10px 24px rgba(24,36,48,.05);}
+  p{margin:0 0 12px;}
+  code{background:rgba(24,36,48,.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);}
+
+  .code-block{background:var(--terminal);color:var(--terminal-text);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;overflow-x:auto;white-space:pre;}
+  .code-block .kw{color:#E3A54B;}
+  .code-block .str{color:#7FCBB6;}
+  .code-block .cm{color:#8993A0;font-style:italic;}
+
+  /* Tabs */
+  .tab-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tab-btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid var(--line);color:var(--slate);}
+  .tab-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* Mini reference cards */
+  .basics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  @media (max-width:760px){.basics-grid{grid-template-columns:1fr;}}
+  .basics-card{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;}
+  .basics-card h4{margin:0 0 6px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;}
+  .basics-card p{margin:0;font-size:14px;color:var(--body);}
+
+  /* List indexing diagram */
+  .list-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:22px 0 8px;}
+  .list-tile{position:relative;width:64px;height:52px;border-radius:8px;background:#EEF1E9;border:1.5px solid rgba(24,36,48,.14);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--ink);transition:background .3s,border-color .3s;}
+  .list-tile.hl{background:rgba(184,121,14,.14);border-color:var(--amber);border-width:2px;}
+  .list-tile .idx{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--slate);}
+  .list-caption{text-align:center;color:var(--slate);font-size:13px;font-family:'JetBrains Mono',monospace;margin-top:30px;}
+
+  /* For-loop stepper */
+  .stepper-readout{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--ink);text-align:center;margin:6px 0 4px;min-height:22px;}
+  .stepper-sub{text-align:center;color:var(--slate);font-size:12px;font-family:'JetBrains Mono',monospace;margin-bottom:18px;}
+  .pseudo-line{font-family:'JetBrains Mono',monospace;font-size:14.5px;padding:8px 12px;border-radius:6px;color:var(--slate);margin-bottom:2px;border-left:3px solid transparent;transition:all .25s;}
+  .pseudo-line.active{background:rgba(184,121,14,.10);border-left-color:var(--amber);color:var(--ink);}
+  .pseudo-line .indent{padding-left:22px;display:block;}
+  .stepper-controls{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center;}
+
+  button{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;background:var(--amber);color:#FFFFFF;}
+  button.secondary{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  button:disabled{opacity:.4;cursor:default;}
+  .status-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--slate);margin-top:14px;min-height:18px;text-align:center;}
+
+  .choice-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px;}
+  .choice-btn{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);cursor:pointer;}
+  .choice-btn:hover{border-color:var(--amber);}
+  .choice-btn.correct{border-color:var(--pine);background:rgba(43,99,87,.12);}
+  .choice-btn.wrong{border-color:var(--brick);background:rgba(178,58,34,.10);}
+
+  .cta-card{background:var(--ink);border-radius:14px;padding:30px 28px;text-align:center;}
+  .cta-card h2{color:#fff;border-left:none;padding-left:0;}
+  .cta-card p{color:#AEB8C2;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Learning Guide</p>
+  <h1>Lists &amp; For Loops</h1>
+  <p class="sub">
+    The two building blocks behind the Pass/Fail Counter exercise. Nothing here asks you to write and run
+    code — just to understand what a list is, and what a for loop actually does with one, one item at a time.
+  </p>
+
+  <div class="badge-row">
+    <span class="badge">Concept: lists</span>
+    <span class="badge">Concept: for loop</span>
+    <span class="badge">Difficulty: Beginner</span>
+  </div>
+
+  <!-- ============ TABS: LIST BASICS + FOR LOOP MECHANICS ============ -->
+  <section>
+    <p class="section-num">Start here</p>
+    <h2>What you need before Read the Code</h2>
+    <p class="section-desc">Two ideas, one after the other — a list holds many values, a for loop visits them one at a time.</p>
+
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" data-tab="list" role="tab" aria-selected="true">What is a list?</button>
+      <button class="tab-btn" data-tab="loop" role="tab" aria-selected="false">How a for loop works</button>
+    </div>
+
+    <div class="card tab-panel active" id="tab-list">
+      <p>
+        A list holds many values in one variable, in a fixed order. Instead of <code>score1</code>,
+        <code>score2</code>, <code>score3</code>..., you get one name for the whole collection:
+      </p>
+      <div class="code-block">scores = [45, 32, 78, 40, 55, 21, 90]</div>
+
+      <div class="basics-grid" style="margin-top:22px;">
+        <div class="basics-card">
+          <h4>Creating a list</h4>
+          <p>Square brackets, values separated by commas: <code>[45, 32, 78]</code>. Order is preserved — the first value stays first.</p>
+        </div>
+        <div class="basics-card">
+          <h4>Indexing</h4>
+          <p>Every item has a position, starting at <code>0</code>, not <code>1</code>. <code>scores[0]</code> is the first item.</p>
+        </div>
+        <div class="basics-card">
+          <h4>len()</h4>
+          <p><code>len(scores)</code> gives you the count of items — how many positions there are to visit.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-head">Picture it</h3>
+      <p>Each box below is one item in <code>scores</code>. The number underneath is its index.</p>
+      <div class="list-row" id="listRow"></div>
+      <p class="list-caption">scores[0] is 45 · scores[3] is 40 · scores[6] is the last item, at index len(scores) - 1</p>
+
+      <h3 class="sub-head">Reading from a list</h3>
+      <div class="code-block">print(scores[0])   <span class="cm"># 45 — the first item</span>
+print(scores[3])   <span class="cm"># 40</span>
+print(len(scores)) <span class="cm"># 7 — there are 7 items</span></div>
+    </div>
+
+    <div class="card tab-panel" id="tab-loop">
+      <p>
+        A for loop walks through a list <strong>one item at a time</strong>, in order, without you having to
+        track a position yourself.
+      </p>
+      <div class="code-block"><span class="kw">for</span> score <span class="kw">in</span> scores:
+    print(score)</div>
+      <p style="margin-top:10px;">
+        Each time round, <code>score</code> is reassigned to the next value in the list — first <code>45</code>,
+        then <code>32</code>, and so on — until every item has been visited once.
+      </p>
+
+      <h3 class="sub-head">Step through it</h3>
+      <p>Same list as above. Step through what the loop does, one move at a time.</p>
+
+      <div class="list-row" id="stepperRow"></div>
+      <div class="stepper-readout" id="stepperReadout">not started</div>
+      <div class="stepper-sub" id="stepperSub">scores has 7 items</div>
+
+      <div class="pseudo-line" id="pl-header"><span><span class="kw">for</span> score <span class="kw">in</span> scores:</span></div>
+      <div class="pseudo-line" id="pl-body"><span class="indent">do something with score</span></div>
+      <div class="pseudo-line" id="pl-advance"><span class="indent">move to the next item</span></div>
+      <div class="pseudo-line" id="pl-exit"><span>no items left → loop ends</span></div>
+
+      <div class="stepper-controls">
+        <button id="stepBtn">Step ▸</button>
+        <button id="playBtn" class="secondary">Play</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+      <div class="status-line" id="stepperStatus">Click Step to begin.</div>
+    </div>
+  </section>
+
+  <!-- ============ PUTTING THEM TOGETHER ============ -->
+  <section>
+    <p class="section-num">Combine them</p>
+    <h2>List + for loop + a condition</h2>
+    <p class="section-desc">This is the exact shape behind the Pass/Fail Counter — a loop, a check, and a running result.</p>
+    <div class="card">
+      <h3 class="sub-head">Adding everything up</h3>
+      <div class="code-block">total = 0
+<span class="kw">for</span> score <span class="kw">in</span> scores:
+    total += score
+print(total)</div>
+      <p style="margin-top:10px;">One running value, updated once per item. No indexing, no counting positions — just visit, update, repeat.</p>
+
+      <h3 class="sub-head">Counting matches</h3>
+      <div class="code-block">pass_count = 0
+<span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="kw">if</span> score &gt;= 40:
+        pass_count += 1
+print(<span class="str">f"Passed: {pass_count}"</span>)</div>
+      <p style="margin-top:10px;">
+        Same shape again, with one extra ingredient: a decision made once per item. This is the code you'll
+        be specifying, tracing, breaking, and extending in <strong>Read the Code: Pass/Fail Counter</strong>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ QUICK CHECK ============ -->
+  <section>
+    <p class="section-num">Quick check</p>
+    <h2>Before you move on</h2>
+    <p class="section-desc"><code>scores = [12, 45, 7]</code>. How many times does the loop body run for <code>for score in scores: print(score)</code>?</p>
+    <div class="card">
+      <div class="choice-row" id="quickCheck">
+        <button class="choice-btn" data-val="1">1 time</button>
+        <button class="choice-btn" data-val="2">2 times</button>
+        <button class="choice-btn" data-val="3">3 times</button>
+        <button class="choice-btn" data-val="4">4 times</button>
+      </div>
+      <div class="status-line" id="quickCheckStatus"></div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section>
+    <div class="card cta-card">
+      <h2>Ready for Read the Code</h2>
+      <p>You've got what you need — a list holds many values, a for loop visits each one. Head over to the Pass/Fail Counter exercise to put it to work.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const scores = [45, 32, 78, 40, 55, 21, 90];
+
+/* ---------- Tabs ---------- */
+(function(){
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected','true');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+})();
+
+/* ---------- List indexing diagram (tab 1) ---------- */
+(function(){
+  const row = document.getElementById('listRow');
+  scores.forEach((val, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'list-tile';
+    tile.innerHTML = val + '<span class="idx">' + i + '</span>';
+    row.appendChild(tile);
+  });
+  const tiles = row.querySelectorAll('.list-tile');
+  const highlightSeq = [0, 3, 6];
+  let step = 0;
+  function run(){
+    tiles.forEach(t => t.classList.remove('hl'));
+    if (step < highlightSeq.length) {
+      tiles[highlightSeq[step]].classList.add('hl');
+      step++;
+      setTimeout(run, 850);
+    }
+  }
+  setTimeout(run, 500);
+})();
+
+/* ---------- For-loop stepper (tab 2) ---------- */
+(function(){
+  const row = document.getElementById('stepperRow');
+  scores.forEach((val, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'list-tile';
+    tile.innerHTML = val + '<span class="idx">' + i + '</span>';
+    row.appendChild(tile);
+  });
+  const tiles = row.querySelectorAll('.list-tile');
+
+  const readout = document.getElementById('stepperReadout');
+  const sub = document.getElementById('stepperSub');
+  const status = document.getElementById('stepperStatus');
+  const stepBtn = document.getElementById('stepBtn');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const lines = {
+    header: document.getElementById('pl-header'),
+    body: document.getElementById('pl-body'),
+    advance: document.getElementById('pl-advance'),
+    exit: document.getElementById('pl-exit'),
+  };
+
+  let i = -1, phase = 'start', playTimer = null;
+
+  function clearActive(){ Object.values(lines).forEach(l => l.classList.remove('active')); }
+  function highlightTile(idx){
+    tiles.forEach(t => t.classList.remove('hl'));
+    if (idx >= 0 && idx < tiles.length) tiles[idx].classList.add('hl');
+  }
+
+  function step(){
+    switch(phase){
+      case 'start':
+        i = 0;
+        clearActive(); lines.header.classList.add('active');
+        highlightTile(i);
+        readout.textContent = 'score = scores[' + i + '] = ' + scores[i];
+        status.textContent = 'Loop starts — score is now the first item.';
+        phase = 'body';
+        break;
+      case 'body':
+        clearActive(); lines.header.classList.add('active'); lines.body.classList.add('active');
+        status.textContent = 'The loop body runs once for this item.';
+        phase = 'advance';
+        break;
+      case 'advance':
+        if (i + 1 < scores.length) {
+          clearActive(); lines.advance.classList.add('active');
+          i++;
+          highlightTile(i);
+          readout.textContent = 'score = scores[' + i + '] = ' + scores[i];
+          status.textContent = 'Moved to the next item.';
+          phase = 'body';
+        } else {
+          clearActive(); lines.exit.classList.add('active');
+          highlightTile(-1);
+          readout.textContent = 'no items left';
+          status.textContent = 'Every item has been visited — the loop ends.';
+          phase = 'done';
+          stepBtn.disabled = true;
+        }
+        break;
+    }
+  }
+
+  function reset(){
+    i = -1; phase = 'start';
+    clearActive();
+    highlightTile(-1);
+    readout.textContent = 'not started';
+    sub.textContent = 'scores has ' + scores.length + ' items';
+    status.textContent = 'Click Step to begin.';
+    stepBtn.disabled = false;
+    stopPlay();
+  }
+  function stopPlay(){
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+    playBtn.textContent = 'Play';
+  }
+
+  stepBtn.addEventListener('click', step);
+  resetBtn.addEventListener('click', reset);
+  playBtn.addEventListener('click', function(){
+    if (playTimer) { stopPlay(); return; }
+    this.textContent = 'Pause';
+    playTimer = setInterval(() => {
+      if (phase === 'done') { stopPlay(); return; }
+      step();
+    }, 600);
+  });
+
+  reset();
+})();
+
+/* ---------- Quick check ---------- */
+(function(){
+  const btns = document.querySelectorAll('#quickCheck .choice-btn');
+  const status = document.getElementById('quickCheckStatus');
+  const correct = '3';
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('correct','wrong'));
+      if (btn.dataset.val === correct) {
+        btn.classList.add('correct');
+        status.textContent = 'Correct — one pass through the body per item, and there are 3 items.';
+      } else {
+        btn.classList.add('wrong');
+        status.textContent = 'Not quite — count the items in the list itself.';
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
