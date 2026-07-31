@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Learning Guide — For Loops &amp; Conditionals</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F7FA;
+    --ink:#16243A;
+    --body:#3A4A5C;
+    --amber:#C93634;
+    --pine:#2A537D;
+    --brick:#A62C2A;
+    --slate:#5C6B7A;
+    --card:#FFFFFF;
+    --card2:#EEF3F8;
+    --line:rgba(22,36,58,.10);
+    --terminal:#16273D;
+    --terminal-text:#EAF0F6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--body);font-family:'Inter',sans-serif;line-height:1.6;}
+  .wrap{max-width:960px;margin:0 auto;padding:56px 24px 120px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,4.6vw,42px);margin:0 0 8px;color:var(--ink);}
+  .sub{color:var(--slate);font-size:16px;margin:0 0 34px;max-width:680px;}
+  .badge-row{display:flex;gap:10px;margin-bottom:44px;flex-wrap:wrap;}
+  .badge{font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid rgba(201,54,52,.35);color:var(--amber);background:rgba(201,54,52,.08);}
+  section{margin-bottom:56px;}
+  .section-num{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 4px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:21px;color:var(--ink);margin:0 0 6px;}
+  h3.sub-head{font-family:'Space Grotesk',sans-serif;font-size:16.5px;color:var(--ink);margin:26px 0 10px;}
+  h3.sub-head:first-of-type{margin-top:4px;}
+  .section-desc{color:var(--slate);font-size:15px;margin:0 0 20px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 28px;box-shadow:0 1px 2px rgba(22,36,58,.04), 0 10px 24px rgba(22,36,58,.05);}
+  p{margin:0 0 12px;}
+  code{background:rgba(22,36,58,.06);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);}
+
+  .code-block{background:var(--terminal);color:var(--terminal-text);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;overflow-x:auto;white-space:pre;}
+  .code-block .kw{color:#7BAFE0;}
+  .code-block .str{color:#E8A79C;}
+  .code-block .cm{color:#8592A0;font-style:italic;}
+
+  /* Tabs */
+  .tab-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tab-btn{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid var(--line);color:var(--slate);}
+  .tab-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* Mini reference cards */
+  .basics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+  @media (max-width:760px){.basics-grid{grid-template-columns:1fr;}}
+  .basics-card{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;}
+  .basics-card h4{margin:0 0 6px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;}
+  .basics-card p{margin:0;font-size:14px;color:var(--body);}
+
+  /* List tiles + branching stepper */
+  .list-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:22px 0 8px;}
+  .list-tile{position:relative;width:64px;height:52px;border-radius:8px;background:var(--card2);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--ink);transition:background .3s,border-color .3s;}
+  .list-tile.checking{background:rgba(201,54,52,.10);border-color:var(--amber);border-width:2px;}
+  .list-tile.pass{background:rgba(42,83,125,.12);border-color:var(--pine);border-width:2px;color:var(--pine);}
+  .list-tile.fail{background:rgba(166,44,42,.10);border-color:var(--brick);border-width:2px;color:var(--brick);}
+  .list-tile .idx{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--slate);}
+
+  .counter-row{display:flex;gap:24px;justify-content:center;margin:34px 0 22px;font-family:'JetBrains Mono',monospace;font-size:15px;}
+  .counter{display:flex;align-items:center;gap:8px;}
+  .counter-dot{width:10px;height:10px;border-radius:50%;}
+  .counter-dot.pass{background:var(--pine);}
+  .counter-dot.fail{background:var(--brick);}
+
+  .stepper-readout{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--ink);text-align:center;margin:6px 0 4px;min-height:22px;}
+  .pseudo-line{font-family:'JetBrains Mono',monospace;font-size:14.5px;padding:8px 12px;border-radius:6px;color:var(--slate);margin-bottom:2px;border-left:3px solid transparent;transition:all .25s;}
+  .pseudo-line.active{background:rgba(201,54,52,.10);border-left-color:var(--amber);color:var(--ink);}
+  .pseudo-line.active-pass{background:rgba(42,83,125,.10);border-left-color:var(--pine);color:var(--ink);}
+  .pseudo-line.active-fail{background:rgba(166,44,42,.10);border-left-color:var(--brick);color:var(--ink);}
+  .pseudo-line .indent{padding-left:22px;display:block;}
+  .pseudo-line .indent2{padding-left:44px;display:block;}
+  .stepper-controls{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center;}
+
+  button{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;background:var(--amber);color:#FFFFFF;}
+  button.secondary{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  button:disabled{opacity:.4;cursor:default;}
+  .status-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--slate);margin-top:14px;min-height:18px;text-align:center;}
+
+  .choice-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px;}
+  .choice-btn{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);cursor:pointer;}
+  .choice-btn:hover{border-color:var(--amber);}
+  .choice-btn.correct{border-color:var(--pine);background:rgba(42,83,125,.12);}
+  .choice-btn.wrong{border-color:var(--brick);background:rgba(166,44,42,.10);}
+
+  .cta-card{background:var(--ink);border-radius:14px;padding:30px 28px;text-align:center;}
+  .cta-card h2{color:#fff;border-left:none;padding-left:0;}
+  .cta-card p{color:#AEB8C2;margin-bottom:18px;}
+  .cta-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .cta-links a{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:10px 18px;text-decoration:none;}
+  .cta-links a:hover{background:rgba(255,255,255,.2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Learning Guide</p>
+  <h1>For Loops &amp; Conditionals</h1>
+  <p class="sub">
+    A for loop repeats. An if/elif/else makes a decision. Put them together, and you get the shape behind
+    almost every "go through this list and do something different depending on each item" problem —
+    including both Read the Code exercises.
+  </p>
+
+  <div class="badge-row">
+    <span class="badge">Concept: for loop</span>
+    <span class="badge">Concept: if / elif / else</span>
+    <span class="badge">Difficulty: Beginner</span>
+  </div>
+
+  <!-- ============ TABS: MECHANICS + SYNTAX ============ -->
+  <section>
+    <p class="section-num">Start here</p>
+    <h2>A decision, once per item</h2>
+    <p class="section-desc">Same list as the Pass/Fail Counter exercise — watch what happens when a condition gets added inside the loop.</p>
+
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" data-tab="mechanics" role="tab" aria-selected="true">How it works</button>
+      <button class="tab-btn" data-tab="python" role="tab" aria-selected="false">Python syntax</button>
+    </div>
+
+    <div class="card tab-panel active" id="tab-mechanics">
+      <p>The loop visits one item at a time, same as always. The new part: at each item, it asks a question, and the answer decides what happens next.</p>
+
+      <div class="list-row" id="stepperRow"></div>
+      <div class="stepper-readout" id="stepperReadout">not started</div>
+
+      <div class="counter-row">
+        <div class="counter"><span class="counter-dot pass"></span><span id="passReadout">Passed: 0</span></div>
+        <div class="counter"><span class="counter-dot fail"></span><span id="failReadout">Failed: 0</span></div>
+      </div>
+
+      <div class="pseudo-line" id="pl-header"><span><span class="kw">for</span> score <span class="kw">in</span> scores:</span></div>
+      <div class="pseudo-line" id="pl-cond"><span class="indent"><span class="kw">if</span> score &gt;= 40:</span></div>
+      <div class="pseudo-line" id="pl-true"><span class="indent2">pass_count += 1</span></div>
+      <div class="pseudo-line" id="pl-else"><span class="indent"><span class="kw">else</span>:</span></div>
+      <div class="pseudo-line" id="pl-false"><span class="indent2">fail_count += 1</span></div>
+      <div class="pseudo-line" id="pl-exit"><span>no items left → loop ends</span></div>
+
+      <div class="stepper-controls">
+        <button id="stepBtn">Step ▸</button>
+        <button id="playBtn" class="secondary">Play</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+      <div class="status-line" id="stepperStatus">Click Step to begin.</div>
+    </div>
+
+    <div class="card tab-panel" id="tab-python">
+      <h3 class="sub-head">if / else — two-way</h3>
+      <p>Exactly one of the two branches runs, every time.</p>
+      <div class="code-block"><span class="kw">if</span> score &gt;= 40:
+    pass_count += 1
+<span class="kw">else</span>:
+    fail_count += 1</div>
+
+      <h3 class="sub-head">if / elif / else — three-way (or more)</h3>
+      <p><code>elif</code> only gets checked if everything above it was false. Order matters — the most specific condition goes first.</p>
+      <div class="code-block"><span class="kw">if</span> temp &gt;= 38:
+    print(<span class="str">"Heat Warning"</span>)
+<span class="kw">elif</span> temp &gt;= 15:
+    print(<span class="str">"Pleasant"</span>)
+<span class="kw">else</span>:
+    print(<span class="str">"Cold Alert"</span>)</div>
+
+      <div class="basics-grid" style="margin-top:22px;">
+        <div class="basics-card">
+          <h4>Exactly one branch runs</h4>
+          <p>Python checks top to bottom and stops at the first true condition — the rest are skipped, even if they'd also be true.</p>
+        </div>
+        <div class="basics-card">
+          <h4>else is optional</h4>
+          <p>You can have <code>if</code> alone, or <code>if</code>/<code>else</code>, with no <code>elif</code> at all — add branches only when you need them.</p>
+        </div>
+        <div class="basics-card">
+          <h4>Indentation marks the branch</h4>
+          <p>Whatever's indented under <code>if</code> belongs to that branch. A line back at the <code>if</code>'s level is outside it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PUTTING THEM TOGETHER ============ -->
+  <section>
+    <p class="section-num">Combine them</p>
+    <h2>Loop + condition, two shapes you'll keep seeing</h2>
+    <p class="section-desc">Both of these are a for loop with a decision inside it. The number of branches is the only real difference.</p>
+    <div class="card">
+      <h3 class="sub-head">Two-way split — counting</h3>
+      <div class="code-block">pass_count = 0
+fail_count = 0
+<span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="kw">if</span> score &gt;= 40:
+        pass_count += 1
+    <span class="kw">else</span>:
+        fail_count += 1
+print(<span class="str">f"Passed: {pass_count}, Failed: {fail_count}"</span>)</div>
+      <p style="margin-top:10px;">This is the shape behind <strong>Read the Code: Pass/Fail Counter</strong>.</p>
+
+      <h3 class="sub-head">Three-way split — classifying</h3>
+      <div class="code-block"><span class="kw">for</span> temp <span class="kw">in</span> temps:
+    <span class="kw">if</span> temp &gt;= 38:
+        print(<span class="str">"Heat Warning"</span>)
+    <span class="kw">elif</span> temp &gt;= 15:
+        print(<span class="str">"Pleasant"</span>)
+    <span class="kw">else</span>:
+        print(<span class="str">"Cold Alert"</span>)</div>
+      <p style="margin-top:10px;">This is the shape behind <strong>Read the Code: Weather Alert Classifier</strong>.</p>
+    </div>
+  </section>
+
+  <!-- ============ QUICK CHECK ============ -->
+  <section>
+    <p class="section-num">Quick check</p>
+    <h2>Before you move on</h2>
+    <p class="section-desc"><code>scores = [10, 45, 39, 40]</code>. How many times does this print <code>"Pass"</code>?</p>
+    <div class="card">
+      <div class="code-block"><span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="kw">if</span> score &gt;= 40:
+        print(<span class="str">"Pass"</span>)
+    <span class="kw">else</span>:
+        print(<span class="str">"Fail"</span>)</div>
+      <div class="choice-row" id="quickCheck">
+        <button class="choice-btn" data-val="1">1</button>
+        <button class="choice-btn" data-val="2">2</button>
+        <button class="choice-btn" data-val="3">3</button>
+        <button class="choice-btn" data-val="4">4</button>
+      </div>
+      <div class="status-line" id="quickCheckStatus"></div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section>
+    <div class="card cta-card">
+      <h2>Ready to practice</h2>
+      <p>Both exercises use exactly this shape — a loop, a decision, a running result.</p>
+      <div class="cta-links">
+        <a href="read-the-code-pass-fail.html">Pass/Fail Counter →</a>
+        <a href="read-the-code-weather-alert.html">Weather Alert Classifier →</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const scores = [45, 32, 78, 40, 55, 21, 90];
+
+/* ---------- Tabs ---------- */
+(function(){
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected','true');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+})();
+
+/* ---------- Branching stepper ---------- */
+(function(){
+  const row = document.getElementById('stepperRow');
+  scores.forEach((val, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'list-tile';
+    tile.innerHTML = val + '<span class="idx">' + i + '</span>';
+    row.appendChild(tile);
+  });
+  const tiles = row.querySelectorAll('.list-tile');
+
+  const readout = document.getElementById('stepperReadout');
+  const status = document.getElementById('stepperStatus');
+  const passReadout = document.getElementById('passReadout');
+  const failReadout = document.getElementById('failReadout');
+  const stepBtn = document.getElementById('stepBtn');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const lines = {
+    header: document.getElementById('pl-header'),
+    cond: document.getElementById('pl-cond'),
+    true_: document.getElementById('pl-true'),
+    else_: document.getElementById('pl-else'),
+    false_: document.getElementById('pl-false'),
+    exit: document.getElementById('pl-exit'),
+  };
+
+  let i = -1, phase = 'start', passCount = 0, failCount = 0, playTimer = null;
+
+  function clearActive(){ Object.values(lines).forEach(l => l.classList.remove('active','active-pass','active-fail')); }
+  function clearTiles(){ tiles.forEach(t => t.classList.remove('checking','pass','fail')); }
+  function updateCounters(){
+    passReadout.textContent = 'Passed: ' + passCount;
+    failReadout.textContent = 'Failed: ' + failCount;
+  }
+
+  function step(){
+    switch(phase){
+      case 'start':
+        i = 0;
+        clearActive(); lines.header.classList.add('active');
+        clearTiles(); tiles[i].classList.add('checking');
+        readout.textContent = 'score = scores[' + i + '] = ' + scores[i];
+        status.textContent = 'Loop starts.';
+        phase = 'cond';
+        break;
+      case 'cond':
+        clearActive(); lines.header.classList.add('active'); lines.cond.classList.add('active');
+        status.textContent = 'Checking: is ' + scores[i] + ' >= 40?';
+        phase = scores[i] >= 40 ? 'true' : 'false';
+        break;
+      case 'true':
+        clearActive(); lines.cond.classList.add('active-pass'); lines.true_.classList.add('active-pass');
+        tiles[i].classList.remove('checking'); tiles[i].classList.add('pass');
+        passCount++; updateCounters();
+        status.textContent = 'Yes → pass_count goes up.';
+        phase = 'advance';
+        break;
+      case 'false':
+        clearActive(); lines.cond.classList.add('active-fail'); lines.else_.classList.add('active-fail'); lines.false_.classList.add('active-fail');
+        tiles[i].classList.remove('checking'); tiles[i].classList.add('fail');
+        failCount++; updateCounters();
+        status.textContent = 'No → fail_count goes up.';
+        phase = 'advance';
+        break;
+      case 'advance':
+        if (i + 1 < scores.length) {
+          i++;
+          clearActive(); lines.header.classList.add('active');
+          tiles[i].classList.add('checking');
+          readout.textContent = 'score = scores[' + i + '] = ' + scores[i];
+          status.textContent = 'Moved to the next item.';
+          phase = 'cond';
+        } else {
+          clearActive(); lines.exit.classList.add('active');
+          readout.textContent = 'no items left';
+          status.textContent = 'Every item has been checked — the loop ends.';
+          phase = 'done';
+          stepBtn.disabled = true;
+        }
+        break;
+    }
+  }
+
+  function reset(){
+    i = -1; phase = 'start'; passCount = 0; failCount = 0;
+    clearActive(); clearTiles(); updateCounters();
+    readout.textContent = 'not started';
+    status.textContent = 'Click Step to begin.';
+    stepBtn.disabled = false;
+    stopPlay();
+  }
+  function stopPlay(){
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+    playBtn.textContent = 'Play';
+  }
+
+  stepBtn.addEventListener('click', step);
+  resetBtn.addEventListener('click', reset);
+  playBtn.addEventListener('click', function(){
+    if (playTimer) { stopPlay(); return; }
+    this.textContent = 'Pause';
+    playTimer = setInterval(() => {
+      if (phase === 'done') { stopPlay(); return; }
+      step();
+    }, 650);
+  });
+
+  reset();
+})();
+
+/* ---------- Quick check ---------- */
+(function(){
+  const btns = document.querySelectorAll('#quickCheck .choice-btn');
+  const status = document.getElementById('quickCheckStatus');
+  const correct = '2';
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('correct','wrong'));
+      if (btn.dataset.val === correct) {
+        btn.classList.add('correct');
+        status.textContent = 'Correct — 45 and 40 both clear the 40 mark.';
+      } else {
+        btn.classList.add('wrong');
+        status.textContent = 'Not quite — check each score against the condition.';
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
