@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Learning Guide — For Loops &amp; Conditionals</title>
+<title>Learning Guide — Lists, For Loops &amp; Conditionals</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -91,76 +91,51 @@
   .choice-btn:hover{border-color:var(--amber);}
   .choice-btn.correct{border-color:var(--pine);background:rgba(42,83,125,.12);}
   .choice-btn.wrong{border-color:var(--brick);background:rgba(166,44,42,.10);}
-
-  .cta-card{background:var(--ink);border-radius:14px;padding:30px 28px;text-align:center;}
-  .cta-card h2{color:#fff;border-left:none;padding-left:0;}
-  .cta-card p{color:#AEB8C2;margin-bottom:18px;}
-  .cta-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-  .cta-links a{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:10px 18px;text-decoration:none;}
-  .cta-links a:hover{background:rgba(255,255,255,.2);}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <p class="eyebrow">Learning Guide</p>
-  <h1>For Loops &amp; Conditionals</h1>
+  <h1>Conditionals, For Loops &amp; Lists</h1>
   <p class="sub">
-    A for loop repeats. An if/elif/else makes a decision. Put them together, and you get the shape behind
-    almost every "go through this list and do something different depending on each item" problem —
-    including both Read the Code exercises.
+    An if/elif/else makes a decision. A for loop repeats it. A list gives it something real to repeat
+    over. Learn them in that order, then see all three combined.
   </p>
 
   <div class="badge-row">
-    <span class="badge">Concept: for loop</span>
     <span class="badge">Concept: if / elif / else</span>
+    <span class="badge">Concept: for loop</span>
+    <span class="badge">Concept: lists</span>
     <span class="badge">Difficulty: Beginner</span>
   </div>
 
-  <!-- ============ TABS: MECHANICS + SYNTAX ============ -->
+  <!-- ============ TABS: CONDITIONALS + LOOPS + LISTS ============ -->
   <section>
     <p class="section-num">Start here</p>
-    <h2>A decision, once per item</h2>
-    <p class="section-desc">Same list as the Pass/Fail Counter exercise — watch what happens when a condition gets added inside the loop.</p>
+    <h2>Decisions, then repetition, then data</h2>
+    <p class="section-desc">Three ideas, in the order you'll actually use them: decide once, repeat that decision, then apply it to a real list of values.</p>
 
     <div class="tab-bar" role="tablist">
-      <button class="tab-btn active" data-tab="mechanics" role="tab" aria-selected="true">How it works</button>
-      <button class="tab-btn" data-tab="python" role="tab" aria-selected="false">Python syntax</button>
+      <button class="tab-btn active" data-tab="conditionals" role="tab" aria-selected="true">Conditionals</button>
+      <button class="tab-btn" data-tab="loops" role="tab" aria-selected="false">For Loops</button>
+      <button class="tab-btn" data-tab="list" role="tab" aria-selected="false">Lists</button>
     </div>
 
-    <div class="card tab-panel active" id="tab-mechanics">
-      <p>The loop visits one item at a time, same as always. The new part: at each item, it asks a question, and the answer decides what happens next.</p>
+    <div class="card tab-panel active" id="tab-conditionals">
+      <p>Before there's anything to repeat, there's a decision to make. A conditional runs different code depending on whether something is true.</p>
+      <div class="code-block">score = 45
+<span class="kw">if</span> score &gt;= 40:
+    print(<span class="str">"Pass"</span>)
+<span class="kw">else</span>:
+    print(<span class="str">"Fail"</span>)</div>
 
-      <div class="list-row" id="stepperRow"></div>
-      <div class="stepper-readout" id="stepperReadout">not started</div>
-
-      <div class="counter-row">
-        <div class="counter"><span class="counter-dot pass"></span><span id="passReadout">Passed: 0</span></div>
-        <div class="counter"><span class="counter-dot fail"></span><span id="failReadout">Failed: 0</span></div>
-      </div>
-
-      <div class="pseudo-line" id="pl-header"><span><span class="kw">for</span> score <span class="kw">in</span> scores:</span></div>
-      <div class="pseudo-line" id="pl-cond"><span class="indent"><span class="kw">if</span> score &gt;= 40:</span></div>
-      <div class="pseudo-line" id="pl-true"><span class="indent2">pass_count += 1</span></div>
-      <div class="pseudo-line" id="pl-else"><span class="indent"><span class="kw">else</span>:</span></div>
-      <div class="pseudo-line" id="pl-false"><span class="indent2">fail_count += 1</span></div>
-      <div class="pseudo-line" id="pl-exit"><span>no items left → loop ends</span></div>
-
-      <div class="stepper-controls">
-        <button id="stepBtn">Step ▸</button>
-        <button id="playBtn" class="secondary">Play</button>
-        <button id="resetBtn" class="secondary">Reset</button>
-      </div>
-      <div class="status-line" id="stepperStatus">Click Step to begin.</div>
-    </div>
-
-    <div class="card tab-panel" id="tab-python">
       <h3 class="sub-head">if / else — two-way</h3>
       <p>Exactly one of the two branches runs, every time.</p>
       <div class="code-block"><span class="kw">if</span> score &gt;= 40:
-    pass_count += 1
+    print(<span class="str">"Pass"</span>)
 <span class="kw">else</span>:
-    fail_count += 1</div>
+    print(<span class="str">"Fail"</span>)</div>
 
       <h3 class="sub-head">if / elif / else — three-way (or more)</h3>
       <p><code>elif</code> only gets checked if everything above it was false. Order matters — the most specific condition goes first.</p>
@@ -185,6 +160,84 @@
           <p>Whatever's indented under <code>if</code> belongs to that branch. A line back at the <code>if</code>'s level is outside it.</p>
         </div>
       </div>
+    </div>
+
+    <div class="card tab-panel" id="tab-loops">
+      <p>A for loop repeats a block of code once for every item in a sequence. The simplest sequence to start with is a range of numbers.</p>
+      <div class="code-block"><span class="kw">for</span> i <span class="kw">in</span> range(1, 6):
+    print(i)</div>
+      <p style="margin-top:10px;">This prints <code>1 2 3 4 5</code>. <code>range(1, 6)</code> counts from 1 up to 6 — the second number is never reached.</p>
+
+      <h3 class="sub-head">Step through it</h3>
+      <p>Now add the conditional from the last tab, so the loop does something different each time round.</p>
+
+      <div class="list-row" id="loopStepperRow"></div>
+      <div class="stepper-readout" id="loopStepperReadout">not started</div>
+
+      <div class="counter-row">
+        <div class="counter"><span class="counter-dot pass"></span><span id="evenReadout">Evens: 0</span></div>
+        <div class="counter"><span class="counter-dot fail"></span><span id="oddReadout">Odds: 0</span></div>
+      </div>
+
+      <div class="pseudo-line" id="pl2-header"><span><span class="kw">for</span> i <span class="kw">in</span> range(1, 7):</span></div>
+      <div class="pseudo-line" id="pl2-cond"><span class="indent"><span class="kw">if</span> i % 2 == 0:</span></div>
+      <div class="pseudo-line" id="pl2-true"><span class="indent2">print(<span class="str">"Even"</span>)</span></div>
+      <div class="pseudo-line" id="pl2-else"><span class="indent"><span class="kw">else</span>:</span></div>
+      <div class="pseudo-line" id="pl2-false"><span class="indent2">print(<span class="str">"Odd"</span>)</span></div>
+      <div class="pseudo-line" id="pl2-exit"><span>no numbers left → loop ends</span></div>
+
+      <div class="stepper-controls">
+        <button id="loopStepBtn">Step ▸</button>
+        <button id="loopPlayBtn" class="secondary">Play</button>
+        <button id="loopResetBtn" class="secondary">Reset</button>
+      </div>
+      <div class="status-line" id="loopStepperStatus">Click Step to begin.</div>
+    </div>
+
+    <div class="card tab-panel" id="tab-list">
+      <p>
+        A list holds many values in one variable, in a fixed order. Instead of <code>score1</code>,
+        <code>score2</code>, <code>score3</code>..., you get one name for the whole collection:
+      </p>
+      <div class="code-block">scores = [45, 32, 78, 40, 55, 21, 90]</div>
+
+      <div class="basics-grid" style="margin-top:22px;">
+        <div class="basics-card">
+          <h4>Creating a list</h4>
+          <p>Square brackets, values separated by commas: <code>[45, 32, 78]</code>. Order is preserved — the first value stays first.</p>
+        </div>
+        <div class="basics-card">
+          <h4>Indexing</h4>
+          <p>Every item has a position, starting at <code>0</code>, not <code>1</code>. <code>scores[0]</code> is the first item.</p>
+        </div>
+        <div class="basics-card">
+          <h4>len()</h4>
+          <p><code>len(scores)</code> gives you the count of items — how many positions there are to visit.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-head">Picture it</h3>
+      <p>Each box below is one item in <code>scores</code>. The number underneath is its index.</p>
+      <div class="list-row" id="indexRow"></div>
+      <p class="status-line" style="margin-top:30px;">scores[0] is 45 &middot; scores[3] is 40 &middot; scores[6] is the last item, at index len(scores) - 1</p>
+
+      <h3 class="sub-head">Reading from a list</h3>
+      <div class="code-block">print(scores[0])   <span class="cm"># 45 — the first item</span>
+print(scores[3])   <span class="cm"># 40</span>
+print(len(scores)) <span class="cm"># 7 — there are 7 items</span></div>
+
+      <h3 class="sub-head">Iterating a list with a loop</h3>
+      <p>
+        Here's where the last two tabs meet a real container. A for loop can walk through <code>scores</code>
+        directly, one item at a time — no index needed at all:
+      </p>
+      <div class="code-block"><span class="kw">for</span> score <span class="kw">in</span> scores:
+    print(score)</div>
+      <p style="margin-top:10px;">
+        Each time round, <code>score</code> is reassigned to the next value in the list — first <code>45</code>,
+        then <code>32</code>, and so on — until every item has been visited once. That's the whole loop,
+        with the indexing handled for you.
+      </p>
     </div>
   </section>
 
@@ -238,18 +291,6 @@ print(<span class="str">f"Passed: {pass_count}, Failed: {fail_count}"</span>)</d
     </div>
   </section>
 
-  <!-- ============ CTA ============ -->
-  <section>
-    <div class="card cta-card">
-      <h2>Ready to practice</h2>
-      <p>Both exercises use exactly this shape — a loop, a decision, a running result.</p>
-      <div class="cta-links">
-        <a href="read-the-code-pass-fail.html">Pass/Fail Counter →</a>
-        <a href="read-the-code-weather-alert.html">Weather Alert Classifier →</a>
-      </div>
-    </div>
-  </section>
-
 </div>
 
 <script>
@@ -269,9 +310,9 @@ const scores = [45, 32, 78, 40, 55, 21, 90];
   });
 })();
 
-/* ---------- Branching stepper ---------- */
+/* ---------- List indexing diagram ---------- */
 (function(){
-  const row = document.getElementById('stepperRow');
+  const row = document.getElementById('indexRow');
   scores.forEach((val, i) => {
     const tile = document.createElement('div');
     tile.className = 'list-tile';
@@ -279,30 +320,54 @@ const scores = [45, 32, 78, 40, 55, 21, 90];
     row.appendChild(tile);
   });
   const tiles = row.querySelectorAll('.list-tile');
+  const highlightSeq = [0, 3, 6];
+  let step = 0;
+  function run(){
+    tiles.forEach(t => t.classList.remove('checking'));
+    if (step < highlightSeq.length) {
+      tiles[highlightSeq[step]].classList.add('checking');
+      step++;
+      setTimeout(run, 850);
+    }
+  }
+  setTimeout(run, 500);
+})();
 
-  const readout = document.getElementById('stepperReadout');
-  const status = document.getElementById('stepperStatus');
-  const passReadout = document.getElementById('passReadout');
-  const failReadout = document.getElementById('failReadout');
-  const stepBtn = document.getElementById('stepBtn');
-  const playBtn = document.getElementById('playBtn');
-  const resetBtn = document.getElementById('resetBtn');
+/* ---------- Loop stepper (range + even/odd) ---------- */
+(function(){
+  const rangeNums = [1, 2, 3, 4, 5, 6];
+  const row = document.getElementById('loopStepperRow');
+  rangeNums.forEach((val) => {
+    const tile = document.createElement('div');
+    tile.className = 'list-tile';
+    tile.textContent = val;
+    row.appendChild(tile);
+  });
+  const tiles = row.querySelectorAll('.list-tile');
+
+  const readout = document.getElementById('loopStepperReadout');
+  const status = document.getElementById('loopStepperStatus');
+  const evenReadout = document.getElementById('evenReadout');
+  const oddReadout = document.getElementById('oddReadout');
+  const stepBtn = document.getElementById('loopStepBtn');
+  const playBtn = document.getElementById('loopPlayBtn');
+  const resetBtn = document.getElementById('loopResetBtn');
   const lines = {
-    header: document.getElementById('pl-header'),
-    cond: document.getElementById('pl-cond'),
-    true_: document.getElementById('pl-true'),
-    else_: document.getElementById('pl-else'),
-    false_: document.getElementById('pl-false'),
-    exit: document.getElementById('pl-exit'),
+    header: document.getElementById('pl2-header'),
+    cond: document.getElementById('pl2-cond'),
+    true_: document.getElementById('pl2-true'),
+    else_: document.getElementById('pl2-else'),
+    false_: document.getElementById('pl2-false'),
+    exit: document.getElementById('pl2-exit'),
   };
 
-  let i = -1, phase = 'start', passCount = 0, failCount = 0, playTimer = null;
+  let i = -1, phase = 'start', evenCount = 0, oddCount = 0, playTimer = null;
 
   function clearActive(){ Object.values(lines).forEach(l => l.classList.remove('active','active-pass','active-fail')); }
   function clearTiles(){ tiles.forEach(t => t.classList.remove('checking','pass','fail')); }
   function updateCounters(){
-    passReadout.textContent = 'Passed: ' + passCount;
-    failReadout.textContent = 'Failed: ' + failCount;
+    evenReadout.textContent = 'Evens: ' + evenCount;
+    oddReadout.textContent = 'Odds: ' + oddCount;
   }
 
   function step(){
@@ -311,41 +376,41 @@ const scores = [45, 32, 78, 40, 55, 21, 90];
         i = 0;
         clearActive(); lines.header.classList.add('active');
         clearTiles(); tiles[i].classList.add('checking');
-        readout.textContent = 'score = scores[' + i + '] = ' + scores[i];
+        readout.textContent = 'i = ' + rangeNums[i];
         status.textContent = 'Loop starts.';
         phase = 'cond';
         break;
       case 'cond':
         clearActive(); lines.header.classList.add('active'); lines.cond.classList.add('active');
-        status.textContent = 'Checking: is ' + scores[i] + ' >= 40?';
-        phase = scores[i] >= 40 ? 'true' : 'false';
+        status.textContent = 'Checking: is ' + rangeNums[i] + ' % 2 == 0?';
+        phase = (rangeNums[i] % 2 === 0) ? 'true' : 'false';
         break;
       case 'true':
         clearActive(); lines.cond.classList.add('active-pass'); lines.true_.classList.add('active-pass');
         tiles[i].classList.remove('checking'); tiles[i].classList.add('pass');
-        passCount++; updateCounters();
-        status.textContent = 'Yes → pass_count goes up.';
+        evenCount++; updateCounters();
+        status.textContent = 'Yes → prints "Even".';
         phase = 'advance';
         break;
       case 'false':
         clearActive(); lines.cond.classList.add('active-fail'); lines.else_.classList.add('active-fail'); lines.false_.classList.add('active-fail');
         tiles[i].classList.remove('checking'); tiles[i].classList.add('fail');
-        failCount++; updateCounters();
-        status.textContent = 'No → fail_count goes up.';
+        oddCount++; updateCounters();
+        status.textContent = 'No → prints "Odd".';
         phase = 'advance';
         break;
       case 'advance':
-        if (i + 1 < scores.length) {
+        if (i + 1 < rangeNums.length) {
           i++;
           clearActive(); lines.header.classList.add('active');
           tiles[i].classList.add('checking');
-          readout.textContent = 'score = scores[' + i + '] = ' + scores[i];
-          status.textContent = 'Moved to the next item.';
+          readout.textContent = 'i = ' + rangeNums[i];
+          status.textContent = 'Moved to the next number.';
           phase = 'cond';
         } else {
           clearActive(); lines.exit.classList.add('active');
-          readout.textContent = 'no items left';
-          status.textContent = 'Every item has been checked — the loop ends.';
+          readout.textContent = 'no numbers left';
+          status.textContent = 'Every number has been checked — the loop ends.';
           phase = 'done';
           stepBtn.disabled = true;
         }
@@ -354,7 +419,7 @@ const scores = [45, 32, 78, 40, 55, 21, 90];
   }
 
   function reset(){
-    i = -1; phase = 'start'; passCount = 0; failCount = 0;
+    i = -1; phase = 'start'; evenCount = 0; oddCount = 0;
     clearActive(); clearTiles(); updateCounters();
     readout.textContent = 'not started';
     status.textContent = 'Click Step to begin.';
