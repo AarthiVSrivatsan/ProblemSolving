@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Read the Code and Answer the questions given</title>
+<title>Read the Code — Weather Alert Classifier</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -87,12 +87,10 @@
 <div class="wrap">
 
   <p class="eyebrow">Reading &amp; Reasoning Exercise</p>
-  <h1>Read the Code: Answer the questions in each Step</h1>
+  <h1>Read the Code: Weather Alert Classifier</h1>
   <p class="sub">
-    Given below is a problem involving for-loops with 3-way conditional statements inside it. 
-    Five exercises are provided to you — specify, trace, verify, tweak, compare. 
-    Write what you understand or learn as answers in the boxes given in each step and generate PDF at the end using the "Finish and Download PDF" button. 
-    Submit the generated PDF as a submission for this assignment.
+    Same five moves as before — specify, trace, verify, tweak, compare — this time on a loop that has to make
+    a three-way decision every time round, not just a yes/no check.
   </p>
 
   <div class="badge-row">
@@ -139,15 +137,14 @@
   <section>
     <p class="section-num">Skill 2 — Trace</p>
     <h2>Predict, don't run</h2>
-    <p class="section-desc">Suppose <code>temps = [10, 38, 20, 5]</code> instead. Before checking, how many of the four lines will say <code>Cold Alert</code>?</p>
+    <p class="section-desc">Consider, the input is changed to <code>temps = [10, 38, 20, 5]</code>. Before running the code, how many of the four do you think will say "Cold Alert"?</p>
     <div class="card">
       <div class="choice-row" id="traceChoices">
-        <button class="choice-btn" data-val="1">1</button>
-        <button class="choice-btn" data-val="2">2</button>
-        <button class="choice-btn" data-val="3">3</button>
-        <button class="choice-btn" data-val="4">4</button>
+        <button class="choice-btn" data-val="1">Once</button>
+        <button class="choice-btn" data-val="2">Twice</button>
+        <button class="choice-btn" data-val="3">Thrice</button>
+        <button class="choice-btn" data-val="4">Four times</button>
       </div>
-      <div class="status-line" id="traceStatus"></div>
       <textarea id="traceReasoning" rows="3" placeholder="Explain why, temperature by temperature..." style="margin-top:12px;"></textarea>
       <div class="reveal-box" id="traceReveal">
         <strong>Walking through it:</strong>
@@ -277,21 +274,18 @@
 /* ---------- Skill 2: Trace ---------- */
 (function(){
   const btns = document.querySelectorAll('#traceChoices .choice-btn');
-  const status = document.getElementById('traceStatus');
   const reveal = document.getElementById('traceReveal');
-  const correct = '2';
+  const reasoning = document.getElementById('traceReasoning');
   btns.forEach(btn => {
     btn.addEventListener('click', () => {
-      btns.forEach(b => b.classList.remove('correct','wrong'));
-      if (btn.dataset.val === correct) {
-        btn.classList.add('correct');
-        status.textContent = 'Correct — the 10 and the 5 both land below 15.';
-      } else {
-        btn.classList.add('wrong');
-        status.textContent = 'Not quite — walk through each temperature below.';
-      }
-      reveal.classList.add('show');
+      btns.forEach(b => b.classList.remove('picked'));
+      btn.classList.add('picked');
     });
+  });
+  reasoning.addEventListener('blur', () => {
+    if (reasoning.value.trim().length > 0) {
+      reveal.classList.add('show');
+    }
   });
 })();
 
@@ -372,7 +366,7 @@
     addParagraph(document.getElementById('specAnswer').value);
 
     addTitle('Skill 2 — Trace: predicted output and reasoning');
-    addParagraph('Selected answer: ' + pickedText('#traceChoices .choice-btn.correct, #traceChoices .choice-btn.wrong'));
+    addParagraph('Selected answer: ' + pickedText('#traceChoices .choice-btn.picked'));
     addParagraph(document.getElementById('traceReasoning').value);
 
     addTitle('Skill 3 — Verify: correctness judgement and counterexample');
